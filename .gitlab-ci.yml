@@ -1,0 +1,37 @@
+---
+image: williamyeh/ansible:ubuntu16.04
+
+before_script:
+#  - apt-get update -qq
+#  - apt-get install -y git python-apt
+#  - pip install -r requirements.txt
+#  - ansible-galaxy install -r tests/requirements.yml
+  - cp extra_vars.yml.sample extra_vars.yml
+  - echo "Building config for tenant $azure_cli_tenant_id"
+  - sed -ri "s:AZURE_CLI_APPLICATION_ID:${azure_cli_application_id}:" extra_vars.yml
+  - sed -ri "s:AZURE_CLI_APPLICATION_KEY:$azure_cli_application_key:" extra_vars.yml
+  - sed -ri "s:AZURE_CLI_TENANT_ID:${azure_cli_tenant_id}:" extra_vars.yml
+  - sed -ri "s:AZURE_IOT_HUB_NAME:ci-iot-hub:" extra_vars.yml
+  - sed -ri "s:AZURE_IOT_GROUP:ci-iot-group:" extra_vars.yml
+
+validate:
+  script:
+    - molecule lint
+    - cd tests
+    # following test doesn't work, dependent role doesn't support check
+    # ansible-playbook test.yml -i inventory --check --extra-vars="@extra_vars.yml
+
+test_skyway_edge_vm:
+  script:
+    - >
+      ansible-playbook tests/test.yml -i tests/inventory
+      --extra-vars @extra_vars.yml
+
+test_skyway_edge_vm_docker:
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE:latest .
+    - docker run $CI_REGISTRY_IMAGE:latest
