@@ -41,3 +41,12 @@
   when:
     - govc is not defined
     - is_govc_exist is defined and is_govc_exist.failed
+
+- name: debug govc
+  debug: msg="using govc {{ is_govc_exist }}"
+
+- name: Use found govc
+  set_fact: govc="govc"
+  when:
+    - govc is not defined
+    - is_govc_exist is defined and not is_govc_exist.failed

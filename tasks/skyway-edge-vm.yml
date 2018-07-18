@@ -31,3 +31,6 @@
     - download_base_ova is undefined or not download_base_ova.changed
   tags:
     - skip_ansible_lint
+
+# - name: debug govc
+#   debug: msg="Invoking govc {{ govc }}"
