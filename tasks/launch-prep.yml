@@ -40,4 +40,4 @@
       set_fact: govc="{{ govc_bindir }}/govc"
   when:
     - govc is not defined
-    - is_govc_exist is defined and is_govc_exist.rc != 0
+    - is_govc_exist is defined and is_govc_exist.failed
