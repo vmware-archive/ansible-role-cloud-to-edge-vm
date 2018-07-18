@@ -7,7 +7,7 @@ ADD . /code
 WORKDIR /code
 
 #RUN apt-get update -qq && apt-get install -y python-pip git
-#RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt
 #RUN ansible-galaxy install -r requirements.yml
 
 # These arguments assume the local inventory and extra_vars is already created.
