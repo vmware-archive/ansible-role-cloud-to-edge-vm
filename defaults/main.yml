@@ -1,2 +1,12 @@
 ---
 # defaults file for ansible-role-skyway-edge-vm
+
+govc_version: 0.18.0
+
+govc_bindir: /usr/local/bin
+
+base_ova_name: xenial-server-cloudimg-amd64.ova
+
+base_ova_server: https://cloud-images.ubuntu.com/xenial/current
+
+base_ova_origin: "{{ base_ova_server }}/{{ base_ova_name }}"

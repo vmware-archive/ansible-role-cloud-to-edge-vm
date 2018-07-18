@@ -1,0 +1,43 @@
+# Copyright © 2018 VMware, Inc. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+---
+# These tasks set up depedencies in order to launch VMs
+
+- name: Check if govc installed
+  shell: command -v govc >/dev/null 2>&1
+  register: is_govc_exist
+  ignore_errors: true
+  when: govc is not defined
+
+- name: Download govc
+  block:
+    - name: Define govc build
+      set_fact: govc_build="linux_amd64"
+      when: ansible_os_family == "Debian"
+
+    - name: Define govc build (OSX)
+      set_fact: govc_build="darwin_amd64"
+      when: ansible_os_family == "Darwin"
+
+    - name: Download govc
+      get_url:
+        url: "https://github.com/vmware/govmomi/releases/download/v\
+          {{ govc_version }}/govc_{{ govc_build }}.gz"
+        dest: "{{ govc_bindir }}/govc"
+      register: download_govc
+
+    - name: Set govc perms
+      file:
+        path: "{{ govc_bindir }}/govc"
+        mode: "+x"
+      when:
+        - download_govc.changed
+        - not download_govc.failed
+      tags:
+        - skip_ansible_lint
+
+    - name: Define govc path
+      set_fact: govc="{{ govc_bindir }}/govc"
+  when:
+    - govc is not defined
+    - is_govc_exist is defined and is_govc_exist.rc != 0

@@ -1,0 +1,33 @@
+# Copyright © 2018 VMware, Inc. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+---
+# These tasks launch a given VM to act as an Edge Gateway
+
+# jq -n --arg userdata "$userdata" --arg network "$network"
+#   -f bootstrap-spec.json > bootstrap-spec.edited.json
+# govc import.ova -options=bootstrap-spec.edited.json -name=$vm bootstrap.ova
+# govc vm.change -vm $vm -nested-hv-enabled=true
+# govc vm.change -vm $vm -m=${memory}
+# govc vm.change -vm $vm -c=${cpus}
+# govc vm.disk.change -vm $vm -size ${disk}
+# vm_path="$(govc find / -type m -name "$vm")"
+
+- name: Download base OVA
+  get_url:
+    url: "{{ binary_webserver }}/{{ base_ova }}"
+    dest: "/tmp/skyway-edge-amd64.ova"
+  register: download_base_ova
+  when:
+    - binary_webserver is defined
+    - base_ova is defined
+
+- name: Download base OVA from internet
+  get_url:
+    url: "{{ base_ova_origin }}"
+    dest: "/tmp/skyway-edge-amd64.ova"
+  register: download_base_ova_origin
+  when:
+    - base_ova_origin is defined
+    - download_base_ova is undefined or not download_base_ova.changed
+  tags:
+    - skip_ansible_lint
