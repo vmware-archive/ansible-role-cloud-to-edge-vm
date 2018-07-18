@@ -2,11 +2,7 @@
 image: williamyeh/ansible:ubuntu16.04
 
 before_script:
-#  - apt-get update -qq
-#  - apt-get install -y git python-apt
-#  - pip install -r requirements.txt
-#  - ansible-galaxy install -r tests/requirements.yml
-#  - cp extra_vars.yml.sample extra_vars.yml
+ - pip install -r requirements.txt
 
 validate:
   script:
