@@ -12,14 +12,11 @@ validate:
   script:
     - molecule lint
     - cd tests
-    # following test doesn't work, dependent role doesn't support check
-    # ansible-playbook test.yml -i inventory --check --extra-vars="@extra_vars.yml
+    - ansible-playbook test.yml -i inventory --check
 
 test_skyway_edge_vm:
   script:
-    - >
-      ansible-playbook tests/test.yml -i tests/inventory
-      --extra-vars @extra_vars.yml
+    - ansible-playbook tests/test.yml -i tests/inventory
 
 test_skyway_edge_vm_docker:
   image: docker:latest

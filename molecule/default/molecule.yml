@@ -13,13 +13,6 @@ provisioner:
   name: ansible
   lint:
     name: ansible-lint
-  options:
-    extra-vars:
-      azure_cli_application_id: ${azure_cli_application_id}
-      azure_cli_application_key: ${azure_cli_application_key}
-      azure_cli_tenant_id: ${azure_cli_tenant_id}
-      azure_iot_hub_name: ${azure_iot_hub_name}
-      azure_iot_group: ${azure_iot_group}
 scenario:
   name: default
 verifier:
