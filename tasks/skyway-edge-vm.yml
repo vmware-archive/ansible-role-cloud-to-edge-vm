@@ -32,5 +32,52 @@
   tags:
     - skip_ansible_lint
 
-# - name: debug govc
-#   debug: msg="Invoking govc {{ govc }}"
+- name: create temporary directory for VM info
+  tempfile:
+    state: directory
+    suffix: govc
+  register: govc_temp
+
+- name: debug generated file path
+  debug: msg="Generating files at {{ govc_temp }}"
+
+- name: debug edge to create
+  debug: var="skyway_edge"
+
+- name: Template out vm userdata
+  template:
+    src: user-data.yml.j2
+    dest: "{{ govc_temp.path }}/user-data.yml"
+
+- name: Encode userdata
+  command: base64 "{{ govc_temp.path }}/user-data.yml"
+  register: base64_userdata
+  when:
+    - userdata is not defined
+
+- name: Set userdata fact
+  set_fact: userdata="base64_userdata.stdout"
+  when:
+    - base64_userdata is defined and not base64_userdata.failed
+
+- name: Template out vm spec
+  template:
+    src: vm-spec.json.j2
+    dest: "{{ govc_temp.path }}/vm-spec.json"
+  when:
+    - userdata is defined
+
+- name: Import ova
+  command: >
+    {{ govc }} import.ova -options="{{ govc_temp.path }}/vm-spec.json"
+    -name={{ vm_name|quote }}
+    "/tmp/skyway-edge-amd64.ova"
+  environment:
+    GOVC_URL: "{{ skyway_edge.vcenter_host }}"
+    GOVC_USERNAME: "{{ skyway_edge.vcenter_usr }}"
+    GOVC_PASSWORD: "{{ skyway_edge.vcenter_pwd }}"
+    GOVC_DATACENTER: "{{ skyway_edge.vcenter_datacenter }}"
+    GOVC_DATASTORE: "{{ skyway_edge.vcenter_datastore }}"
+    GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
+  register: govc_import_ova
+  when: govc is defined

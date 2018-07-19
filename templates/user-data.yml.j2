@@ -1,0 +1,42 @@
+#cloud-config
+debug:
+  verbose: true
+bootcmd:
+  - echo 'boot cmd execute' >> /etc/cmds
+runcmd:
+  - echo 'runcmd done' >> /etc/cmds
+chpasswd: { expire: False }
+chpasswd:
+  list: |
+    root:{{ vm_password }}
+  expire: False
+ssh_pwauth: yes
+users:
+  - name: vmware
+    passwd: $6$rounds=8888$y1zBWcO8MT$J2a599jjEaJDV5Vq3t4yEKz7CVOmJqidRmv4h1fXlkzHArHEcBNUVwbnSGrIaJ2aHUwxRMS193SyuH9fKQJD20
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: users,wheel
+    lock_passwd: false
+    ssh-authorized-keys:
+      - {{ vm_ssh_pub_key }}
+    shell: /bin/bash
+hostname: ubuntu
+final_message: 'System is up after $UPTIME sec using $DATASOURCE and $VERSION'
+ntp:
+  enabled: true
+packages:
+  - curl
+  - open-vm-tools
+  - python-setuptools
+  - python2.7
+  - python2.7-dev
+  - unzip
+apt_update: true
+apt_upgrade: true
+apt_reboot_if_required: true
+manage_resolv_conf: true
+resolv_conf:
+    nameservers: ['8.8.4.4', '8.8.8.8']
+growpart:
+  mode: auto
+  devices: ['/']

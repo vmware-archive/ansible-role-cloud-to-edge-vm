@@ -10,3 +10,27 @@ base_ova_name: xenial-server-cloudimg-amd64.ova
 base_ova_server: https://cloud-images.ubuntu.com/xenial/current
 
 base_ova_origin: "{{ base_ova_server }}/{{ base_ova_name }}"
+
+vm_name: edgevm
+
+vm_password: skyway-passZ!
+
+vm_ssh_pub_key: |
+  ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCX/adFOoYeKAcD81EogrCj5/2FsmJD2i/5geS
+  eGvQZkPmpz54ro5xem6hu4kZaqG3Ej5HGdvZkcNRCK8bTcoRtqHS+uNxfBVAXwgf9G9De8A2wi+
+  R8iugGbTyIEthHcgC4DruE9oGLry8U3NjWwIy0VUDR7xKkjYRe7HAr/UdXI3FYl59KGtOJdbOzI
+  XoNQsY9OTgXgTaKCcFoI0y11MQrbqK+twcjz3ItyhecI8xxwHBcZnAomUFIuS8BeFaiUAj7HtMm
+  Fpc3+plSOiODPI8rPhm5pBiq5FiVrLfjEaBx/1frXuMQ3eaQaQiWzfW8PDVVhnK7650tDg9yjx+
+  bIFop nobody@this-is-a-placeholder-key.com
+
+vm_network: VM Network
+
+skyway_edges: []
+#  - name: group1
+#    vcenter_host: vcsa-01a.corp.local
+#    vcenter_usr: administrator@vsphere.local
+#    vcenter_pwd: your-password-here
+#    vcenter_datacenter: RegionA01
+#    vcenter_datastore: RegionA01-ISCSI01-COMP01
+#    vcenter_cluster:
+#    vcenter_rp: resource_pool
