@@ -21,7 +21,7 @@
     },
     {
       "Key": "user-data",
-      "Value": {{ userdata }}
+      "Value": "{{ userdata | trim() | regex_replace('\\s','') }}"
     },
     {
       "Key": "password",
@@ -31,7 +31,7 @@
   "NetworkMapping": [
     {
       "Name": "VM Network",
-      "Network": {{ vm_network }}
+      "Network": "{{ vm_network }}"
     }
   ],
   "PowerOn": false,

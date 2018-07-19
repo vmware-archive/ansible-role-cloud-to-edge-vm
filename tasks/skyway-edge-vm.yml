@@ -56,7 +56,7 @@
     - userdata is not defined
 
 - name: Set userdata fact
-  set_fact: userdata="base64_userdata.stdout"
+  set_fact: userdata="{{ base64_userdata.stdout }}"
   when:
     - base64_userdata is defined and not base64_userdata.failed
 
@@ -78,6 +78,7 @@
     GOVC_PASSWORD: "{{ skyway_edge.vcenter_pwd }}"
     GOVC_DATACENTER: "{{ skyway_edge.vcenter_datacenter }}"
     GOVC_DATASTORE: "{{ skyway_edge.vcenter_datastore }}"
+    GOVC_CLUSTER: "{{ skyway_edge.vcenter_cluster }}"
     GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
   register: govc_import_ova
   when: govc is defined
