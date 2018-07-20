@@ -12,66 +12,15 @@
 # govc vm.disk.change -vm $vm -size ${disk}
 # vm_path="$(govc find / -type m -name "$vm")"
 
-- name: Download base OVA
-  get_url:
-    url: "{{ binary_webserver }}/{{ base_ova }}"
-    dest: "/tmp/skyway-edge-amd64.ova"
-  register: download_base_ova
+
+- name: Establish VM name
+  set_fact: vm_name="{{ edge_vm_basename }}-{{ skyway_edge.name }}"
   when:
-    - binary_webserver is defined
-    - base_ova is defined
+    - vm_name is not defined
 
-- name: Download base OVA from internet
-  get_url:
-    url: "{{ base_ova_origin }}"
-    dest: "/tmp/skyway-edge-amd64.ova"
-  register: download_base_ova_origin
-  when:
-    - base_ova_origin is defined
-    - download_base_ova is undefined or not download_base_ova.changed
-  tags:
-    - skip_ansible_lint
-
-- name: create temporary directory for VM info
-  tempfile:
-    state: directory
-    suffix: govc
-  register: govc_temp
-
-- name: debug generated file path
-  debug: msg="Generating files at {{ govc_temp }}"
-
-- name: debug edge to create
-  debug: var="skyway_edge"
-
-- name: Template out vm userdata
-  template:
-    src: user-data.yml.j2
-    dest: "{{ govc_temp.path }}/user-data.yml"
-
-- name: Encode userdata
-  command: base64 "{{ govc_temp.path }}/user-data.yml"
-  register: base64_userdata
-  when:
-    - userdata is not defined
-
-- name: Set userdata fact
-  set_fact: userdata="{{ base64_userdata.stdout }}"
-  when:
-    - base64_userdata is defined and not base64_userdata.failed
-
-- name: Template out vm spec
-  template:
-    src: vm-spec.json.j2
-    dest: "{{ govc_temp.path }}/vm-spec.json"
-  when:
-    - userdata is defined
-
-- name: Import ova
+- name: Search for expected VM
   command: >
-    {{ govc }} import.ova -options="{{ govc_temp.path }}/vm-spec.json"
-    -name={{ vm_name|quote }}
-    "/tmp/skyway-edge-amd64.ova"
+    {{ govc }} find / -type m -name {{ vm_name | quote }}
   environment:
     GOVC_URL: "{{ skyway_edge.vcenter_host }}"
     GOVC_USERNAME: "{{ skyway_edge.vcenter_usr }}"
@@ -80,5 +29,160 @@
     GOVC_DATASTORE: "{{ skyway_edge.vcenter_datastore }}"
     GOVC_CLUSTER: "{{ skyway_edge.vcenter_cluster }}"
     GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
-  register: govc_import_ova
+    GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
+  register: govc_find_vm
   when: govc is defined
+
+- name: Set VM path fact
+  set_fact:
+    vm_path: "{{ govc_find_vm.stdout }}"
+  when:
+    - govc_find_vm is defined and not govc_find_vm.failed
+    - vm_name in govc_find_vm.stdout
+
+- name: VM not found for edge, need to make it
+  block:
+    - name: Download base OVA
+      get_url:
+        url: "{{ binary_webserver }}/{{ base_ova }}"
+        dest: "/tmp/skyway-edge-amd64.ova"
+      register: download_base_ova
+      when:
+        - binary_webserver is defined
+        - base_ova is defined
+
+    - name: Download base OVA from internet
+      get_url:
+        url: "{{ base_ova_origin }}"
+        dest: "/tmp/skyway-edge-amd64.ova"
+      register: download_base_ova_origin
+      when:
+        - base_ova_origin is defined
+        - download_base_ova is undefined or not download_base_ova.changed
+      tags:
+        - skip_ansible_lint
+
+    - name: create temporary directory for VM info
+      tempfile:
+        state: directory
+        suffix: govc
+      register: govc_temp
+
+    - name: debug generated file path
+      debug: msg="Generating files at {{ govc_temp }}"
+
+    - name: debug edge to create
+      debug: var="skyway_edge"
+
+    - name: Template out vm userdata
+      template:
+        src: user-data.yml.j2
+        dest: "{{ govc_temp.path }}/user-data.yml"
+
+    - name: Encode userdata
+      command: base64 "{{ govc_temp.path }}/user-data.yml"
+      register: base64_userdata
+      when:
+        - userdata is not defined
+
+    - name: Set userdata fact
+      set_fact: userdata="{{ base64_userdata.stdout }}"
+      when:
+        - base64_userdata is defined and not base64_userdata.failed
+
+    - name: Template out vm spec
+      template:
+        src: vm-spec.json.j2
+        dest: "{{ govc_temp.path }}/vm-spec.json"
+      when:
+        - userdata is defined
+
+    - name: Import ova
+      command: >
+        {{ govc }} import.ova -options="{{ govc_temp.path }}/vm-spec.json"
+        -name={{ vm_name|quote }}
+        "/tmp/skyway-edge-amd64.ova"
+      environment:
+        GOVC_URL: "{{ skyway_edge.vcenter_host }}"
+        GOVC_USERNAME: "{{ skyway_edge.vcenter_usr }}"
+        GOVC_PASSWORD: "{{ skyway_edge.vcenter_pwd }}"
+        GOVC_DATACENTER: "{{ skyway_edge.vcenter_datacenter }}"
+        GOVC_DATASTORE: "{{ skyway_edge.vcenter_datastore }}"
+        GOVC_CLUSTER: "{{ skyway_edge.vcenter_cluster }}"
+        GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
+        GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
+      register: govc_import_ova
+      when: govc is defined
+
+    - name: Now search for created VM
+      command: >
+        {{ govc }} find / -type m -name {{ vm_name | quote }}
+      environment:
+        GOVC_URL: "{{ skyway_edge.vcenter_host }}"
+        GOVC_USERNAME: "{{ skyway_edge.vcenter_usr }}"
+        GOVC_PASSWORD: "{{ skyway_edge.vcenter_pwd }}"
+        GOVC_DATACENTER: "{{ skyway_edge.vcenter_datacenter }}"
+        GOVC_DATASTORE: "{{ skyway_edge.vcenter_datastore }}"
+        GOVC_CLUSTER: "{{ skyway_edge.vcenter_cluster }}"
+        GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
+        GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
+      register: govc_find_vm
+      when: govc is defined
+
+    - name: Set VM path fact
+      set_fact:
+        vm_path: "{{ govc_find_vm.stdout }}"
+      when:
+        - govc_find_vm is defined and not govc_find_vm.failed
+        - vm_name in govc_find_vm.stdout
+  when: vm_path is not defined or not vm_path
+
+- name: debug found VM
+  debug: msg="Found edge VM {{ vm_path }}"
+
+- name: Is VM powered on?
+  command: >
+    {{ govc }} object.collect -s "{{ vm_path }}" runtime.powerState
+  environment:
+    GOVC_URL: "{{ skyway_edge.vcenter_host }}"
+    GOVC_USERNAME: "{{ skyway_edge.vcenter_usr }}"
+    GOVC_PASSWORD: "{{ skyway_edge.vcenter_pwd }}"
+    GOVC_DATACENTER: "{{ skyway_edge.vcenter_datacenter }}"
+    GOVC_DATASTORE: "{{ skyway_edge.vcenter_datastore }}"
+    GOVC_CLUSTER: "{{ skyway_edge.vcenter_cluster }}"
+    GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
+    GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
+  register: is_vm_on
+  when: govc is defined and vm_path is defined
+
+- name: Power it on
+  command: >
+    {{ govc }} vm.power -on {{ vm_name|quote }}
+  environment:
+    GOVC_URL: "{{ skyway_edge.vcenter_host }}"
+    GOVC_USERNAME: "{{ skyway_edge.vcenter_usr }}"
+    GOVC_PASSWORD: "{{ skyway_edge.vcenter_pwd }}"
+    GOVC_DATACENTER: "{{ skyway_edge.vcenter_datacenter }}"
+    GOVC_DATASTORE: "{{ skyway_edge.vcenter_datastore }}"
+    GOVC_CLUSTER: "{{ skyway_edge.vcenter_cluster }}"
+    GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
+    GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
+  when: is_vm_on is defined and is_vm_on != "poweredOn"
+
+- name: Wait for VM to get an IP
+  command: >
+    {{ govc }} vm.ip {{ vm_name|quote }}
+  environment:
+    GOVC_URL: "{{ skyway_edge.vcenter_host }}"
+    GOVC_USERNAME: "{{ skyway_edge.vcenter_usr }}"
+    GOVC_PASSWORD: "{{ skyway_edge.vcenter_pwd }}"
+    GOVC_DATACENTER: "{{ skyway_edge.vcenter_datacenter }}"
+    GOVC_DATASTORE: "{{ skyway_edge.vcenter_datastore }}"
+    GOVC_CLUSTER: "{{ skyway_edge.vcenter_cluster }}"
+    GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
+    GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
+  register: govc_vm_ip
+  when: is_vm_on is defined and is_vm_on != "poweredOn"
+
+- name: debug VM IP
+  debug: msg="Edge VM {{ vm_path }} has IP {{ govc_vm_ip }}"

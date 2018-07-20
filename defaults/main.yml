@@ -11,7 +11,7 @@ base_ova_server: https://cloud-images.ubuntu.com/xenial/current
 
 base_ova_origin: "{{ base_ova_server }}/{{ base_ova_name }}"
 
-vm_name: edgevm
+edge_vm_basename: edgevm
 
 vm_password: skyway-passZ!
 
@@ -31,6 +31,6 @@ skyway_edges: []
 #    vcenter_usr: administrator@vsphere.local
 #    vcenter_pwd: your-password-here
 #    vcenter_datacenter: RegionA01
-#    vcenter_datastore: RegionA01-ISCSI01-COMP01
-#    vcenter_cluster:
-#    vcenter_rp: resource_pool
+#    vcenter_datastore: NFS01
+#    vcenter_cluster: RegionA01-MGMT01
+#    vcenter_rp: RegionA01-MGMT01/Resources
