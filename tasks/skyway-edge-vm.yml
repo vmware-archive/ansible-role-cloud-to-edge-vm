@@ -14,9 +14,14 @@
 
 
 - name: Establish VM name
-  set_fact: vm_name="{{ edge_vm_basename }}-{{ skyway_edge.name }}"
+  set_fact: vm_name="{{ edge_vm_basename }}-{{ skyway_edge.edge_group }}"
   when:
     - vm_name is not defined
+
+- name: Establish VM network
+  set_fact: vm_network="{{ skyway_edge.vm_network }}"
+  when:
+    - vm_network is not defined
 
 - name: Search for expected VM
   command: >
@@ -167,7 +172,7 @@
     GOVC_CLUSTER: "{{ skyway_edge.vcenter_cluster }}"
     GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
     GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
-  when: is_vm_on is defined and is_vm_on != "poweredOn"
+  when: is_vm_on is defined and is_vm_on.stdout != "poweredOn"
 
 - name: Wait for VM to get an IP
   command: >
@@ -184,5 +189,29 @@
   register: govc_vm_ip
   when: is_vm_on is defined and is_vm_on != "poweredOn"
 
+- name: Remember VM IP
+  set_fact:
+    vm_ip: "{{ govc_vm_ip.stdout }}"
+  when:
+    - govc_vm_ip is defined and not govc_vm_ip.failed
+
 - name: debug VM IP
-  debug: msg="Edge VM {{ vm_path }} has IP {{ govc_vm_ip }}"
+  debug: msg="Edge VM {{ vm_path }} has IP {{ vm_ip }}"
+
+- name: Add new host to group 'greengrass-core' with core ID set.
+  add_host:
+    name: "{{ vm_ip }}"
+    groups: greengrass-core
+    greengrass_core_id: "{{ skyway_edge.edge_group }}_Core"
+  when:
+    - greengrass_group_names is defined
+    - skyway_edge.edge_group in greengrass_group_names
+
+- name: Add new host to group 'azure-edge' with Edge name set.
+  add_host:
+    name: "{{ vm_ip }}"
+    groups: azure-edge
+    azure_edge_name: "{{ skyway_edge.edge_group }}"
+  when:
+    - azure_iot_edge_names is defined
+    - skyway_edge.edge_group in azure_iot_edge_names

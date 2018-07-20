@@ -12,9 +12,16 @@ base_ova_server: https://cloud-images.ubuntu.com/xenial/current
 base_ova_origin: "{{ base_ova_server }}/{{ base_ova_name }}"
 
 edge_vm_basename: edgevm
+edge_vm_user: edgevm
+edge_vm_password: skyway-passZ!
 
-vm_password: skyway-passZ!
+# This will serve as a default if no specific network is provided in
+# skway_edges
+vm_network: VM Network
 
+# The key will be deposited on Edge VMs.  The ansible user should have a
+# private key that corresponds to this, either offered by default or configured
+# for the appropriate subnets/domains.
 vm_ssh_pub_key: |
   ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCX/adFOoYeKAcD81EogrCj5/2FsmJD2i/5geS
   eGvQZkPmpz54ro5xem6hu4kZaqG3Ej5HGdvZkcNRCK8bTcoRtqHS+uNxfBVAXwgf9G9De8A2wi+
@@ -23,10 +30,12 @@ vm_ssh_pub_key: |
   Fpc3+plSOiODPI8rPhm5pBiq5FiVrLfjEaBx/1frXuMQ3eaQaQiWzfW8PDVVhnK7650tDg9yjx+
   bIFop nobody@this-is-a-placeholder-key.com
 
-vm_network: VM Network
-
+# The skyway edges are defined as below, one edge for each sub-organization or
+# location that requires it's own IoT edge gateway.
 skyway_edges: []
-#  - name: group1
+# The value for edge_group should match a value in either
+# greengrass_group_names or azure_iot_edge_names (or both)
+#  - edge_group: group1
 #    vcenter_host: vcsa-01a.corp.local
 #    vcenter_usr: administrator@vsphere.local
 #    vcenter_pwd: your-password-here
@@ -34,3 +43,5 @@ skyway_edges: []
 #    vcenter_datastore: NFS01
 #    vcenter_cluster: RegionA01-MGMT01
 #    vcenter_rp: RegionA01-MGMT01/Resources
+#    vcenter_insecure: true
+#    vm_network: VM Network
