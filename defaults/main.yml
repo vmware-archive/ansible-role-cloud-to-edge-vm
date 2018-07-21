@@ -11,18 +11,18 @@ base_ova_server: https://cloud-images.ubuntu.com/xenial/current
 
 base_ova_origin: "{{ base_ova_server }}/{{ base_ova_name }}"
 
-edge_vm_basename: edgevm
-edge_vm_user: edgevm
-edge_vm_password: skyway-passZ!
+skyway_edge_vm_basename: edgevm
+skyway_edge_vm_user: edgevm
+skyway_edge_vm_password: skyway-passZ!
 
 # This will serve as a default if no specific network is provided in
 # skway_edges
-vm_network: VM Network
+skyway_edge_vm_network: VM Network
 
 # The key will be deposited on Edge VMs.  The ansible user should have a
 # private key that corresponds to this, either offered by default or configured
 # for the appropriate subnets/domains.
-vm_ssh_pub_key: |
+skyway_edge_vm_ssh_pub_key: |
   ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCX/adFOoYeKAcD81EogrCj5/2FsmJD2i/5geS
   eGvQZkPmpz54ro5xem6hu4kZaqG3Ej5HGdvZkcNRCK8bTcoRtqHS+uNxfBVAXwgf9G9De8A2wi+
   R8iugGbTyIEthHcgC4DruE9oGLry8U3NjWwIy0VUDR7xKkjYRe7HAr/UdXI3FYl59KGtOJdbOzI

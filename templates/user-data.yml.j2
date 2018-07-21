@@ -8,17 +8,17 @@ runcmd:
 chpasswd: { expire: False }
 chpasswd:
   list: |
-    root:{{ edge_vm_password }}
+    root:{{ skyway_edge_vm_password }}
   expire: False
 ssh_pwauth: yes
 users:
-  - name: {{ edge_vm_user }}
+  - name: {{ skyway_edge_vm_user }}
     passwd: $6$rounds=8888$y1zBWcO8MT$J2a599jjEaJDV5Vq3t4yEKz7CVOmJqidRmv4h1fXlkzHArHEcBNUVwbnSGrIaJ2aHUwxRMS193SyuH9fKQJD20
     sudo: ALL=(ALL) NOPASSWD:ALL
     groups: users,wheel
     lock_passwd: false
     ssh-authorized-keys:
-      - {{ vm_ssh_pub_key }}
+      - {{ skyway_edge_vm_ssh_pub_key }}
     shell: /bin/bash
 hostname: {{ vm_name }}
 final_message: 'System is up after $UPTIME sec using $DATASOURCE and $VERSION'
@@ -36,7 +36,11 @@ apt_upgrade: true
 apt_reboot_if_required: true
 manage_resolv_conf: true
 resolv_conf:
+{% if dnsserver is not none %}
+    nameservers: ['{{ dnsserver }}']
+{% else %}
     nameservers: ['8.8.4.4', '8.8.8.8']
+{% endif %}
 growpart:
   mode: auto
   devices: ['/']

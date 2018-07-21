@@ -14,9 +14,14 @@
 
 
 - name: Establish VM name
-  set_fact: vm_name="{{ edge_vm_basename }}-{{ skyway_edge.edge_group }}"
+  set_fact: vm_name="{{ skyway_edge_vm_basename }}-{{ skyway_edge.edge_group }}"
   when:
     - vm_name is not defined
+
+- name: Establish VM network (default)
+  set_fact: vm_network="{{ skyway_edge_vm_network }}"
+  when:
+    - skyway_edge_vm_network is defined
 
 - name: Establish VM network
   set_fact: vm_network="{{ skyway_edge.vm_network }}"
