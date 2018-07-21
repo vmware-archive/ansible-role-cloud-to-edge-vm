@@ -36,7 +36,7 @@ apt_upgrade: true
 apt_reboot_if_required: true
 manage_resolv_conf: true
 resolv_conf:
-{% if dnsserver is not none %}
+{% if dnsserver is defined and dnsserver is not none %}
     nameservers: ['{{ dnsserver }}']
 {% else %}
     nameservers: ['8.8.4.4', '8.8.8.8']
