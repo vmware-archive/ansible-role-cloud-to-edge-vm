@@ -101,7 +101,7 @@
       command: base64 "{{ govc_temp.path }}/user-data.yml"
       register: base64_userdata
       when:
-        - userdata is not defined
+        - govc_temp is defined
 
     - name: Set userdata fact
       set_fact: userdata="{{ base64_userdata.stdout }}"
