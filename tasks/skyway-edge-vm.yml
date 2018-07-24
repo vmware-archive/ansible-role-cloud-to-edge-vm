@@ -16,7 +16,8 @@
 - name: Establish VM name
   set_fact: vm_name="{{ skyway_edge_vm_basename }}-{{ skyway_edge.edge_group }}"
   when:
-    - vm_name is not defined
+    - skyway_edge_vm_basename is defined
+    - skyway_edge is defined and skyway_edge.edge_group is defined
 
 - name: Establish VM network (default)
   set_fact: vm_network="{{ skyway_edge_vm_network }}"
@@ -26,7 +27,7 @@
 - name: Establish VM network
   set_fact: vm_network="{{ skyway_edge.vm_network }}"
   when:
-    - vm_network is not defined
+    - skyway_edge is defined and skyway_edge.vm_network is defined
 
 - name: Search for expected VM
   command: >
