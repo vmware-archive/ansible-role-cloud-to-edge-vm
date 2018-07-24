@@ -46,6 +46,13 @@
 
 - name: Set VM path fact
   set_fact:
+    vm_path: ""
+  when:
+    - govc_find_vm is defined and not govc_find_vm.failed
+    - vm_name not in govc_find_vm.stdout
+
+- name: Set VM path fact
+  set_fact:
     vm_path: "{{ govc_find_vm.stdout }}"
   when:
     - govc_find_vm is defined and not govc_find_vm.failed
@@ -146,7 +153,7 @@
       when:
         - govc_find_vm is defined and not govc_find_vm.failed
         - vm_name in govc_find_vm.stdout
-  when: vm_path is not defined or not vm_path
+  when: vm_path is not defined or not vm_path or vm_path == ""
 
 - name: debug found VM
   debug: msg="Found edge VM {{ vm_path }}"
