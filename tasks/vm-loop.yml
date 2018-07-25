@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # These tasks loop over the VMs to create.
 
-- include_tasks: fake.yml
+- include_tasks: skyway-edge-vm.yml
   loop: "{{ skyway_edges[skyway_edge_start-1:skyway_edge_end] }}"
   loop_control:
     loop_var: skyway_edge
@@ -12,10 +12,10 @@
     - skyway_edge_start is defined
     - skyway_edge_end is defined
 
-- include_tasks: fake.yml
-  loop: "{{ skyway_edges[skyway_edge_start-1:skyway_edge_end] }}"
+- include_tasks: skyway-edge-vm.yml
+  loop: "{{ skyway_edges }}"
   loop_control:
     loop_var: skyway_edge
   when:
-    - skyway_edge_start is not defined
-    - skyway_edge_end is not defined
+    - skyway_edge_start is undefined
+    - skyway_edge_end is undefined
