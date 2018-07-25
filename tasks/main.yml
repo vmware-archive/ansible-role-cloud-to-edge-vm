@@ -5,7 +5,4 @@
 # This role provides the ability to manage Azure Iot resources.
 
 - import_tasks: launch-prep.yml
-- include_tasks: skyway-edge-vm.yml
-  with_items: "{{ skyway_edges }}"
-  loop_control:
-    loop_var: skyway_edge
+- import_tasks: vm-loop.yml
