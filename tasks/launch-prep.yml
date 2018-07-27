@@ -57,6 +57,12 @@
     - govc is not defined
     - is_govc_exist is defined and not is_govc_exist.failed
 
+- name: Ensure root .ssh directory exists
+- file:
+    path: "{{ansible_env.HOME}}/.ssh"
+    state: directory
+    mode: 0700
+
 - name: Create private key file for edges
   copy:
     content: "{{ skyway_edge_vm_ssh_priv_key }}"
