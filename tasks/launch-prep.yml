@@ -58,7 +58,7 @@
     - is_govc_exist is defined and not is_govc_exist.failed
 
 - name: Ensure root .ssh directory exists
-- file:
+  file:
     path: "{{ansible_env.HOME}}/.ssh"
     state: directory
     mode: 0700
