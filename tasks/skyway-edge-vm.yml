@@ -215,6 +215,8 @@
   add_host:
     name: "{{ vm_ip }}"
     groups: greengrass-core
+    ansible_user: "{{ skyway_edge_vm_user }}"
+    ansible_ssh_private_key_file: "{{ skyway_edge_vm_ssh_priv_key }}"
     greengrass_core_id: "{{ skyway_edge.edge_group }}_Core"
   when:
     - greengrass_group_names is defined
@@ -224,6 +226,8 @@
   add_host:
     name: "{{ vm_ip }}"
     groups: azure-edge
+    ansible_user: "{{ skyway_edge_vm_user }}"
+    ansible_ssh_private_key_file: "{{ skyway_edge_vm_ssh_priv_key }}"
     azure_edge_name: "{{ skyway_edge.edge_group }}"
   when:
     - azure_iot_edge_names is defined
