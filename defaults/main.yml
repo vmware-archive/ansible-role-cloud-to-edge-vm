@@ -19,6 +19,37 @@ skyway_edge_vm_password: skyway-passZ!
 # skway_edges
 skyway_edge_vm_network: VM Network
 
+# Private key for connecting to Edge VMs.  If set, should correspond to the
+# pub key below
+skyway_edge_vm_ssh_priv_key: |
+  -----BEGIN RSA PRIVATE KEY-----
+  MIIEpAIBAAKCAQEA0p9crSf1c5JBjpe5eoXJFjllFOJdT0X1/TrLM3xA+v+/QT/s
+  JdYf+dsE/wv1pJ6LI2MWJS21SPxZbeXV4wtRLpQ0KQungSVNqRmgOpU01EOH21zR
+  Jy491QavESX+qrj2vJLBoOeMlQPxAHG4sAkpNFCRCmtS1VvxOy2AuughwdLJOw2/
+  CVuU2KmOQ0kYi3qRRha85575yw9VqLJm+RR/LEKxZzKiRU6qWVFHQ4zlYwI7My4U
+  rfrKXFHLVbinzbnYj6SZINnplRH2qurqY5tngVebG4hL9htflPw1eF4uy+b2ItEx
+  9qIiFoXQXu2B8QE/lI9Zd+iHyGiqoExMso2ARQIDAQABAoIBACd+jIFHqeX2+eYE
+  G1qXNaK+Nm8ZF0gjJUJLwQixdvnZ9QIGO4DIywwt/pzYoEIzHIIRNXjZPlImR5qs
+  61N8rsdeMP21Wr6DwTFBReNWUSawVwxSNkHzkNKeQzui9UMMFfA8UKScZqcWqx1b
+  NbeEsD5IETpz739kkzJ2kNn7Z0ERr2Tr9KbK2/tGfwYGU3HkUjc8FUKOd20FmAIX
+  pW20XIb5nEvSMlCaBKlO+IE7s4TdV3QFNaZYoHd8c09/5AUj3ihTizLP88Xquoft
+  TYJqngTIHqaFujoo/bfWWMo9MyTfZSSktzNvrOjm2RBdzx9EUkAVJPs7x8dBL+gA
+  AHAxQOECgYEA6xrQPFaJVFDhzDCQnEIaalX0V41RiEpprf7hd1+UrS8/kshkMGsF
+  756Q7B82zfN/zPgqEYYiTj3/8eT/yzJUCIMlzrrWDdSDAzQXondjWgTwqmE8iUYg
+  aAL3jZakSIn8bNUpABqnOGURqqNXh251TUrDoSKofJ/vlwvj+dLEW4kCgYEA5VeF
+  KNC0PQcijpZZNm8AnbAHeJvS3tEZNRiLI5vg5BAspvmp7I4jNMZ3aFL5WrBsfP4c
+  ab1pOhnCYtjK9CATpYGt8UijqqJHkpADpJZz1JYgVTocalfA+W2PvE4tByYtkn1C
+  n3ji+Fi8nxKU1+2HWkrO7UIhtmS4AWkfDLrg490CgYAIAN6r3ypHo4U8RT73As0R
+  Z6GsxVPMNvRIBxA31xohlyUr4wR+HXaTRKucTie4dRyZpq0P8agDT9sBqhEHIsx3
+  ibdkxTl6OQzItCJF1picPOTQeATui2OZBtjUihdHnOLp9YuyxDWDFvW2AF9/bcQy
+  gGQOfTaNH4ixdKcrHwCuOQKBgQCoKGz9iVGusa2X6QuOywMjm+9OcsrCD4UxFkbn
+  HCNgda+X2tXKGkocJy1kc/pbkaJqX5QLwBMIw9xwx87AA0kEgLo+gWln8scR4sCZ
+  DKvvgwhAFXTCUIexG7FZe+SuKkMd9vRDo8qgF8htxp0WWhZ1kQZ6lpPLfbwhZKec
+  mOXOjQKBgQDBw3rzR3VI+KJ/s2ecp87ubQfqrJ561Ivi/AR1hrbF53gwYOfEGaAY
+  o1wSywClqrvRFgpyQ+oBjbBehzLfL8cHEfZe7y0Uf1JnrZu0GyBLWgdPaSNMO0FL
+  DXjXUYmXDNh43f4gwhqq8DGGZ/JSgzu1yrTWQ2FmlhTUgiAhBiQb+Q==
+  -----END RSA PRIVATE KEY-----
+
 # The key will be deposited on Edge VMs.  The ansible user should have a
 # private key that corresponds to this, either offered by default or configured
 # for the appropriate subnets/domains.

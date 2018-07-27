@@ -56,3 +56,11 @@
   when:
     - govc is not defined
     - is_govc_exist is defined and not is_govc_exist.failed
+
+- name: Create private key file for edges
+  copy:
+    content: "{{ skyway_edge_vm_ssh_priv_key }}"
+    dest: "{{ansible_env.HOME}}/.ssh/id_rsa_edges"
+    mode: 0600
+  when:
+    - skyway_edge_vm_ssh_priv_key is defined
