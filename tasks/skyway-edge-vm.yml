@@ -189,7 +189,7 @@
 
 - name: Wait for VM to get an IP
   command: >
-    {{ govc }} vm.ip {{ vm_name|quote }}
+    {{ govc }} vm.ip -a -v4 {{ vm_name|quote }}
   environment:
     GOVC_URL: "{{ skyway_edge.vcenter_host }}"
     GOVC_USERNAME: "{{ skyway_edge.vcenter_usr }}"
