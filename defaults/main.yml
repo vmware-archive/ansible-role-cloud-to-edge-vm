@@ -6,10 +6,13 @@ govc_version: 0.18.0
 govc_bindir: /usr/local/bin
 
 base_ova_name: xenial-server-cloudimg-amd64.ova
+base_ova_name_arm: xenial-server-cloudimg-arm64.ova
 
 base_ova_server: https://cloud-images.ubuntu.com/xenial/current
+base_ova_server_arm: https://s3-us-west-2.amazonaws.com/skyway-dl
 
 base_ova_origin: "{{ base_ova_server }}/{{ base_ova_name }}"
+base_ova_origin_arm: "{{ base_ova_server_arm }}/{{ base_ova_name_arm }}"
 
 skyway_edge_vm_basename: edgevm
 skyway_edge_vm_user: edgevm

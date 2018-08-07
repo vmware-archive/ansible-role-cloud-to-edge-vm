@@ -29,6 +29,21 @@
   when:
     - skyway_edge is defined and skyway_edge.vm_network is defined
 
+- name: Get vcenter details
+  command: >
+    {{ govc }} about
+  environment:
+    GOVC_URL: "{{ skyway_edge.vcenter_host }}"
+    GOVC_USERNAME: "{{ skyway_edge.vcenter_usr }}"
+    GOVC_PASSWORD: "{{ skyway_edge.vcenter_pwd }}"
+    GOVC_DATACENTER: "{{ skyway_edge.vcenter_datacenter }}"
+    GOVC_DATASTORE: "{{ skyway_edge.vcenter_datastore }}"
+    GOVC_CLUSTER: "{{ skyway_edge.vcenter_cluster }}"
+    GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
+    GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
+  register: govc_about
+  when: govc is defined
+
 - name: Search for expected VM
   command: >
     {{ govc }} find / -type m -name {{ vm_name | quote }}
@@ -58,25 +73,67 @@
     - govc_find_vm is defined and not govc_find_vm.failed
     - vm_name in govc_find_vm.stdout
 
+- name: Detect ARM cluster
+  set_fact:
+    is_arm: true
+
+# For the moment, we use the cluster naming convention "*_arm" to "detect"
+# an ARM CPU host.
+# TODO: Once the ARM ESX goes GA, replace with a proper check.
+- name: Detect ARM cluster
+  set_fact:
+    is_arm: true
+  when:
+    - skyway_edge.vcenter_cluster is match(".*_(arm|ARM)$")
+
+- name: Name the OVA
+  set_fact:
+    local_ova_name: "skyway-edge-{{ (is_arm) | ternary('arm','amd') }}64.ova"
+
 - name: VM not found for edge, need to make it
   block:
     - name: Download base OVA
       get_url:
-        url: "{{ binary_webserver }}/{{ base_ova }}"
-        dest: "/tmp/skyway-edge-amd64.ova"
+        url: "{{ binary_webserver }}/{{ base_ova_name }}"
+        dest: "/tmp/{{ local_ova_name }}"
       register: download_base_ova
       when:
         - binary_webserver is defined
-        - base_ova is defined
+        - base_ova_name is defined
+        - not is_arm
 
     - name: Download base OVA from internet
       get_url:
         url: "{{ base_ova_origin }}"
-        dest: "/tmp/skyway-edge-amd64.ova"
+        dest: "/tmp/{{ local_ova_name }}"
       register: download_base_ova_origin
       when:
         - base_ova_origin is defined
         - download_base_ova is undefined or not download_base_ova.changed
+        - not is_arm
+      tags:
+        - skip_ansible_lint
+
+    - name: Download base OVA - ARM
+      get_url:
+        url: "{{ binary_webserver }}/{{ base_ova_name_arm }}"
+        dest: "/tmp/{{ local_ova_name }}"
+      register: download_base_ova_arm
+      when:
+        - binary_webserver is defined
+        - base_ova is defined
+        - is_arm
+
+    - name: Download base OVA from internet - ARM
+      get_url:
+        url: "{{ base_ova_origin_arm }}"
+        dest: "/tmp/{{ local_ova_name }}"
+      register: download_base_ova_arm_origin
+      when:
+        - base_ova_origin_arm is defined
+        - download_base_ova_arm is undefined or \
+          not download_base_ova_arm.changed
+        - is_arm
       tags:
         - skip_ansible_lint
 
@@ -119,7 +176,7 @@
       command: >
         {{ govc }} import.ova -options="{{ govc_temp.path }}/vm-spec.json"
         -name={{ vm_name|quote }}
-        "/tmp/skyway-edge-amd64.ova"
+        "/tmp/{{ local_ova_name }}"
       environment:
         GOVC_URL: "{{ skyway_edge.vcenter_host }}"
         GOVC_USERNAME: "{{ skyway_edge.vcenter_usr }}"
@@ -200,7 +257,72 @@
     GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
     GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
   register: govc_vm_ip
-  when: is_vm_on is defined and is_vm_on != "poweredOn"
+  when:
+    - not is_arm
+
+- name: Get VM info (ARM)
+  command: >
+    {{ govc }} vm.info -json {{ vm_name|quote }}
+  environment:
+    GOVC_URL: "{{ skyway_edge.vcenter_host }}"
+    GOVC_USERNAME: "{{ skyway_edge.vcenter_usr }}"
+    GOVC_PASSWORD: "{{ skyway_edge.vcenter_pwd }}"
+    GOVC_DATACENTER: "{{ skyway_edge.vcenter_datacenter }}"
+    GOVC_DATASTORE: "{{ skyway_edge.vcenter_datastore }}"
+    GOVC_CLUSTER: "{{ skyway_edge.vcenter_cluster }}"
+    GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
+    GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
+  register: vm_info
+  when:
+    - is_arm
+
+- name: Set VM info
+  set_fact:
+    vm: "{{ vm_info.stdout | from_json }}"
+  when:
+    vm_info.changed
+  tags:
+    - skip_ansible_lint
+
+- name: Debug VM info
+  debug:
+    var: vm
+  when:
+    vm_info.changed
+  tags:
+    - skip_ansible_lint
+
+- name: Enable esx guest IP hack (ARM)
+  command: >
+    {{ govc }} host.esxcli system settings advanced set -o /Net/GuestIPHack -i 1
+  environment:
+    GOVC_URL: "{{ skyway_edge.vcenter_host }}"
+    GOVC_USERNAME: "{{ skyway_edge.vcenter_usr }}"
+    GOVC_PASSWORD: "{{ skyway_edge.vcenter_pwd }}"
+    GOVC_DATACENTER: "{{ skyway_edge.vcenter_datacenter }}"
+    GOVC_DATASTORE: "{{ skyway_edge.vcenter_datastore }}"
+    GOVC_CLUSTER: "{{ skyway_edge.vcenter_cluster }}"
+    GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
+    GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
+  register: vm_info
+  when:
+    - is_arm == "Never gonna happen."
+
+- name: Wait for VM to get an IP (ARM)
+  command: >
+    {{ govc }} vm.ip -esxcli=true {{ vm_name|quote }}
+  environment:
+    GOVC_URL: "{{ skyway_edge.vcenter_host }}"
+    GOVC_USERNAME: "{{ skyway_edge.vcenter_usr }}"
+    GOVC_PASSWORD: "{{ skyway_edge.vcenter_pwd }}"
+    GOVC_DATACENTER: "{{ skyway_edge.vcenter_datacenter }}"
+    GOVC_DATASTORE: "{{ skyway_edge.vcenter_datastore }}"
+    GOVC_CLUSTER: "{{ skyway_edge.vcenter_cluster }}"
+    GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
+    GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
+  register: govc_vm_ip
+  when:
+    - is_arm
 
 - name: Remember VM IP
   set_fact:
