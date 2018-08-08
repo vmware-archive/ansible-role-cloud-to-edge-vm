@@ -250,7 +250,9 @@
     GOVC_CLUSTER: "{{ skyway_edge.vcenter_cluster }}"
     GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
     GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
-  when: is_vm_on is defined and is_vm_on.stdout != "poweredOn"
+  when:
+    - is_vm_on.stdout is defined
+    - is_vm_on.stdout != "poweredOn"
 
 - name: Wait for VM to get an IP
   command: >
@@ -336,7 +338,7 @@
   set_fact:
     vm_ip: "{{ govc_vm_ip.stdout }}"
   when:
-    - govc_vm_ip is defined and not govc_vm_ip.failed
+    - govc_vm_ip.stdout is defined and not govc_vm_ip.failed
 
 - name: debug VM IP
   debug: msg="Edge VM {{ vm_path }} has IP {{ vm_ip }}"

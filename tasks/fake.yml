@@ -1,0 +1,22 @@
+# Copyright © 2018 VMware, Inc. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+---
+# These tasks launch a given VM to act as an Edge Gateway
+
+# jq -n --arg userdata "$userdata" --arg network "$network"
+#   -f bootstrap-spec.json > bootstrap-spec.edited.json
+# govc import.ova -options=bootstrap-spec.edited.json -name=$vm bootstrap.ova
+# govc vm.change -vm $vm -nested-hv-enabled=true
+# govc vm.change -vm $vm -m=${memory}
+# govc vm.change -vm $vm -c=${cpus}
+# govc vm.disk.change -vm $vm -size ${disk}
+# vm_path="$(govc find / -type m -name "$vm")"
+
+
+- name: Establish VM name
+  set_fact: vm_name="{{ skyway_edge_vm_basename }}-{{ skyway_edge.edge_group }}"
+  when:
+    - skyway_edge_vm_basename is defined
+    - skyway_edge is defined and skyway_edge.edge_group is defined
+- name: debug VM name
+  debug: msg="Edge VM {{ vm_name }} will be created."
