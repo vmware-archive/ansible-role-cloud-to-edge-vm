@@ -64,6 +64,7 @@
     vm_path: ""
   when:
     - govc_find_vm is defined and not govc_find_vm.failed
+    - govc_find_vm.stdout is defined
     - vm_name not in govc_find_vm.stdout
 
 - name: Set VM path fact
@@ -71,6 +72,7 @@
     vm_path: "{{ govc_find_vm.stdout }}"
   when:
     - govc_find_vm is defined and not govc_find_vm.failed
+    - govc_find_vm.stdout is defined
     - vm_name in govc_find_vm.stdout
 
 - name: Detect ARM cluster
@@ -131,7 +133,7 @@
       register: download_base_ova_arm_origin
       when:
         - base_ova_origin_arm is defined
-        - download_base_ova_arm is undefined or \
+        - download_base_ova_arm is undefined or
           not download_base_ova_arm.changed
         - is_arm
       tags:
@@ -153,17 +155,20 @@
       template:
         src: user-data.yml.j2
         dest: "{{ govc_temp.path }}/user-data.yml"
+      when: govc_temp.path is defined
 
     - name: Encode userdata
       command: base64 "{{ govc_temp.path }}/user-data.yml"
       register: base64_userdata
       when:
-        - govc_temp is defined
+        - govc_temp.path is defined
 
     - name: Set userdata fact
       set_fact: userdata="{{ base64_userdata.stdout }}"
       when:
-        - base64_userdata is defined and not base64_userdata.failed
+        - base64_userdata is defined
+        - base64_userdata.failed is defined
+        - not base64_userdata.failed
 
     - name: Template out vm spec
       template:
@@ -187,7 +192,7 @@
         GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
         GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
       register: govc_import_ova
-      when: govc is defined
+      when: govc is defined and govc_temp.path is defined
 
     - name: Now search for created VM
       command: >
@@ -210,10 +215,13 @@
       when:
         - govc_find_vm is defined and not govc_find_vm.failed
         - vm_name in govc_find_vm.stdout
-  when: vm_path is not defined or not vm_path or vm_path == ""
+  when:
+    - vm_path is not defined or not vm_path or vm_path == ""
+    - govc_find_vm.stdout is defined
 
 - name: debug found VM
   debug: msg="Found edge VM {{ vm_path }}"
+  when: vm_path is defined
 
 - name: Is VM powered on?
   command: >
