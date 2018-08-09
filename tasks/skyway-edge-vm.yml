@@ -77,7 +77,7 @@
 
 - name: Detect ARM cluster
   set_fact:
-    is_arm: true
+    is_arm: false
 
 # For the moment, we use the cluster naming convention "*_arm" to "detect"
 # an ARM CPU host.
@@ -342,6 +342,7 @@
 
 - name: debug VM IP
   debug: msg="Edge VM {{ vm_path }} has IP {{ vm_ip }}"
+  when: vm_path is defined and vm_ip is defined
 
 - name: Add new host to group 'greengrass-core' with core ID set.
   add_host:
@@ -352,6 +353,7 @@
     ansible_become: true
     greengrass_core_id: "{{ skyway_edge.edge_group }}_Core"
   when:
+    - vm_ip is defined
     - greengrass_group_names is defined
     - skyway_edge.edge_group in greengrass_group_names
 
