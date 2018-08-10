@@ -270,6 +270,12 @@
   when:
     - not is_arm
 
+- name: Remember VM IP
+  set_fact:
+    vm_ip: "{{ govc_vm_ip.stdout }}"
+  when:
+    - govc_vm_ip.stdout is defined and not govc_vm_ip.failed
+
 - name: Get VM info (ARM)
   command: >
     {{ govc }} vm.info -json {{ vm_name|quote }}
@@ -338,6 +344,7 @@
   set_fact:
     vm_ip: "{{ govc_vm_ip.stdout }}"
   when:
+    - vm_ip is undefined
     - govc_vm_ip.stdout is defined and not govc_vm_ip.failed
 
 - name: debug VM IP
