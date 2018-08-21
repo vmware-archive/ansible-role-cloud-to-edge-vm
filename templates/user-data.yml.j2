@@ -18,7 +18,7 @@ users:
     groups: users,wheel
     lock_passwd: false
     ssh-authorized-keys:
-      - {{ skyway_edge_vm_ssh_pub_key | trim() | regex_replace('\\s','') }}
+      - {{ skyway_edge_vm_ssh_pub_key | trim() | regex_replace('\\n','') }}
     shell: /bin/bash
 hostname: {{ vm_name }}
 final_message: 'System is up after $UPTIME sec using $DATASOURCE and $VERSION'
