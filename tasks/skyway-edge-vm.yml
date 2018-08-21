@@ -103,6 +103,9 @@
         - binary_webserver is defined
         - base_ova_name is defined
         - not is_arm
+      retries: 10
+      delay: 120
+      until: not download_base_ova.failed
 
     - name: Download base OVA from internet
       get_url:
@@ -113,6 +116,9 @@
         - base_ova_origin is defined
         - download_base_ova is undefined or not download_base_ova.changed
         - not is_arm
+      retries: 10
+      delay: 120
+      until: not download_base_ova_origin.failed
       tags:
         - skip_ansible_lint
 
@@ -125,6 +131,9 @@
         - binary_webserver is defined
         - base_ova is defined
         - is_arm
+      retries: 10
+      delay: 120
+      until: not download_base_ova_arm.failed
 
     - name: Download base OVA from internet - ARM
       get_url:
@@ -136,6 +145,9 @@
         - download_base_ova_arm is undefined or
           not download_base_ova_arm.changed
         - is_arm
+      retries: 10
+      delay: 120
+      until: not download_base_ova_arm_origin.failed
       tags:
         - skip_ansible_lint
 
@@ -193,8 +205,8 @@
         GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
       register: govc_import_ova
       when: govc is defined and govc_temp.path is defined
-      retries: 5
-      delay: 60
+      retries: 10
+      delay: 120
       until: not govc_import_ova.failed
 
     - name: Now search for created VM

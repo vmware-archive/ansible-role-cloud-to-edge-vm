@@ -66,7 +66,21 @@ skyway_edge_vm_ssh_pub_key: |
 
 # The skyway edges are defined as below, one edge for each sub-organization or
 # location that requires it's own IoT edge gateway.
-skyway_edges: []
+skyway_edges:
+  - edge_group: group1
+    vcenter_host: 10.118.233.235
+    vcenter_usr: administrator@vsphere.local
+    vcenter_pwd: Admin!23
+    vcenter_datacenter: ARM vSphere
+    vcenter_datastore: 10.118.151.88
+    vcenter_cluster: IoT_ARM
+    # vcenter_cluster: IoTRegular
+    vcenter_rp: IoT_ARM/Resources
+    # vcenter_datastore: datastore1
+    # vcenter_cluster: Service Provider Cloudlet
+    # vcenter_rp: Service Provider Cloudlet/Resources
+    vcenter_insecure: true
+    vm_network: VM Network
 # The value for edge_group should match a value in either
 # greengrass_group_names or azure_iot_edge_names (or both)
 #  - edge_group: group1
