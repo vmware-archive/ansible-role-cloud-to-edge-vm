@@ -384,7 +384,7 @@
 
 - name: Add new host to group 'greengrass-core' with core ID set.
   add_host:
-    name: "{{ vm_ip }}"
+    name: "34.238.135.135"
     groups: greengrass-core
     ansible_user: "{{ skyway_edge_vm_user }}"
     ansible_ssh_private_key_file: "{{ansible_env.HOME}}/.ssh/id_rsa_edges"
@@ -404,5 +404,6 @@
     ansible_become: true
     azure_edge_name: "{{ skyway_edge.edge_group }}"
   when:
+    - vm_ip is defined
     - azure_iot_edge_names is defined
     - skyway_edge.edge_group in azure_iot_edge_names
