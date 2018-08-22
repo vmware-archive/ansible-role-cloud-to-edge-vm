@@ -12,11 +12,27 @@
 # govc vm.disk.change -vm $vm -size ${disk}
 # vm_path="$(govc find / -type m -name "$vm")"
 
+- name: Set suffix for Azure edges
+  set_fact:
+    vm_suffix: "az"
+  when:
+    - azure_iot_edge_names is defined
+    - skyway_edge.edge_group in azure_iot_edge_names
+
+- name: Set suffix for GreenGrass Cores
+  set_fact:
+    vm_suffix: "aws"
+  when:
+    - greengrass_group_names is defined
+    - skyway_edge.edge_group in greengrass_group_names
 
 - name: Establish VM name
-  set_fact: vm_name="{{ skyway_edge_vm_basename }}-{{ skyway_edge.edge_group }}"
+  set_fact:
+    vm_name: >-
+      {{ skyway_edge_vm_basename }}-{{ vm_suffix }}-{{ skyway_edge.edge_group }}
   when:
     - skyway_edge_vm_basename is defined
+    - vm_suffix is defined
     - skyway_edge is defined and skyway_edge.edge_group is defined
 
 - name: Establish VM network (default)
