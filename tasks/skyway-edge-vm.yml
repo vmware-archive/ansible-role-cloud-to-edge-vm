@@ -205,7 +205,7 @@
       when:
         - userdata is defined
 
-    - name: Import ova
+    - name: Import ova 1
       command: >
         {{ govc }} import.ova -options="{{ govc_temp.path }}/vm-spec.json"
         -name={{ vm_name|quote }}
@@ -219,11 +219,71 @@
         GOVC_CLUSTER: "{{ skyway_edge.vcenter_cluster }}"
         GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
         GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
-      register: govc_import_ova
+      register: govc_import_ova1
       when: govc is defined and govc_temp.path is defined
-      retries: 10
-      delay: 120
-      until: not govc_import_ova.failed
+      ignore_errors: true
+
+    - name: Import ova 2
+      command: >
+        {{ govc }} import.ova -options="{{ govc_temp.path }}/vm-spec.json"
+        -name={{ vm_name|quote }}
+        "/tmp/{{ local_ova_name }}"
+      environment:
+        GOVC_URL: "{{ skyway_edge.vcenter_host }}"
+        GOVC_USERNAME: "{{ skyway_edge.vcenter_usr }}"
+        GOVC_PASSWORD: "{{ skyway_edge.vcenter_pwd }}"
+        GOVC_DATACENTER: "{{ skyway_edge.vcenter_datacenter }}"
+        GOVC_DATASTORE: "{{ skyway_edge.vcenter_datastore }}"
+        GOVC_CLUSTER: "{{ skyway_edge.vcenter_cluster }}"
+        GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
+        GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
+      register: govc_import_ova2
+      when:
+        - govc is defined and govc_temp.path is defined
+        - govc_import_ova1.failed
+      ignore_errors: true
+
+    - name: Import ova 3
+      command: >
+        {{ govc }} import.ova -options="{{ govc_temp.path }}/vm-spec.json"
+        -name={{ vm_name|quote }}
+        "/tmp/{{ local_ova_name }}"
+      environment:
+        GOVC_URL: "{{ skyway_edge.vcenter_host }}"
+        GOVC_USERNAME: "{{ skyway_edge.vcenter_usr }}"
+        GOVC_PASSWORD: "{{ skyway_edge.vcenter_pwd }}"
+        GOVC_DATACENTER: "{{ skyway_edge.vcenter_datacenter }}"
+        GOVC_DATASTORE: "{{ skyway_edge.vcenter_datastore }}"
+        GOVC_CLUSTER: "{{ skyway_edge.vcenter_cluster }}"
+        GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
+        GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
+      register: govc_import_ova3
+      when:
+        - govc is defined and govc_temp.path is defined
+        - govc_import_ova1.failed
+        - govc_import_ova2.failed
+      ignore_errors: true
+
+    - name: Import ova 4
+      command: >
+        {{ govc }} import.ova -options="{{ govc_temp.path }}/vm-spec.json"
+        -name={{ vm_name|quote }}
+        "/tmp/{{ local_ova_name }}"
+      environment:
+        GOVC_URL: "{{ skyway_edge.vcenter_host }}"
+        GOVC_USERNAME: "{{ skyway_edge.vcenter_usr }}"
+        GOVC_PASSWORD: "{{ skyway_edge.vcenter_pwd }}"
+        GOVC_DATACENTER: "{{ skyway_edge.vcenter_datacenter }}"
+        GOVC_DATASTORE: "{{ skyway_edge.vcenter_datastore }}"
+        GOVC_CLUSTER: "{{ skyway_edge.vcenter_cluster }}"
+        GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
+        GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
+      register: govc_import_ova3
+      when:
+        - govc is defined and govc_temp.path is defined
+        - govc_import_ova1.failed
+        - govc_import_ova2.failed
+        - govc_import_ova3.failed
 
     - name: Now search for created VM
       command: >
@@ -384,7 +444,7 @@
 
 - name: Add new host to group 'greengrass-core' with core ID set.
   add_host:
-    name: "34.238.135.135"
+    name: "{{ vm_ip }}"
     groups: greengrass-core
     ansible_user: "{{ skyway_edge_vm_user }}"
     ansible_ssh_private_key_file: "{{ansible_env.HOME}}/.ssh/id_rsa_edges"
