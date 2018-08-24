@@ -221,8 +221,8 @@
         GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
       register: govc_import_ova
       when: govc is defined and govc_temp.path is defined
-      retries: 5
-      delay: 30
+      retries: 15
+      delay: 60
       until: >
         not govc_import_ova.failed or
         govc_import_ova.stderr.find("already exists")
