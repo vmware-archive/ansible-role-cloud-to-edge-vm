@@ -205,7 +205,7 @@
       when:
         - userdata is defined
 
-    - name: Import ova 1
+    - name: Import ova
       command: >
         {{ govc }} import.ova -options="{{ govc_temp.path }}/vm-spec.json"
         -name={{ vm_name|quote }}
@@ -219,71 +219,11 @@
         GOVC_CLUSTER: "{{ skyway_edge.vcenter_cluster }}"
         GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
         GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
-      register: govc_import_ova1
+      register: govc_import_ova
       when: govc is defined and govc_temp.path is defined
-      ignore_errors: true
-
-    - name: Import ova 2
-      command: >
-        {{ govc }} import.ova -options="{{ govc_temp.path }}/vm-spec.json"
-        -name={{ vm_name|quote }}
-        "/tmp/{{ local_ova_name }}"
-      environment:
-        GOVC_URL: "{{ skyway_edge.vcenter_host }}"
-        GOVC_USERNAME: "{{ skyway_edge.vcenter_usr }}"
-        GOVC_PASSWORD: "{{ skyway_edge.vcenter_pwd }}"
-        GOVC_DATACENTER: "{{ skyway_edge.vcenter_datacenter }}"
-        GOVC_DATASTORE: "{{ skyway_edge.vcenter_datastore }}"
-        GOVC_CLUSTER: "{{ skyway_edge.vcenter_cluster }}"
-        GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
-        GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
-      register: govc_import_ova2
-      when:
-        - govc is defined and govc_temp.path is defined
-        - govc_import_ova1.failed
-      ignore_errors: true
-
-    - name: Import ova 3
-      command: >
-        {{ govc }} import.ova -options="{{ govc_temp.path }}/vm-spec.json"
-        -name={{ vm_name|quote }}
-        "/tmp/{{ local_ova_name }}"
-      environment:
-        GOVC_URL: "{{ skyway_edge.vcenter_host }}"
-        GOVC_USERNAME: "{{ skyway_edge.vcenter_usr }}"
-        GOVC_PASSWORD: "{{ skyway_edge.vcenter_pwd }}"
-        GOVC_DATACENTER: "{{ skyway_edge.vcenter_datacenter }}"
-        GOVC_DATASTORE: "{{ skyway_edge.vcenter_datastore }}"
-        GOVC_CLUSTER: "{{ skyway_edge.vcenter_cluster }}"
-        GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
-        GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
-      register: govc_import_ova3
-      when:
-        - govc is defined and govc_temp.path is defined
-        - govc_import_ova1.failed
-        - govc_import_ova2.failed
-      ignore_errors: true
-
-    - name: Import ova 4
-      command: >
-        {{ govc }} import.ova -options="{{ govc_temp.path }}/vm-spec.json"
-        -name={{ vm_name|quote }}
-        "/tmp/{{ local_ova_name }}"
-      environment:
-        GOVC_URL: "{{ skyway_edge.vcenter_host }}"
-        GOVC_USERNAME: "{{ skyway_edge.vcenter_usr }}"
-        GOVC_PASSWORD: "{{ skyway_edge.vcenter_pwd }}"
-        GOVC_DATACENTER: "{{ skyway_edge.vcenter_datacenter }}"
-        GOVC_DATASTORE: "{{ skyway_edge.vcenter_datastore }}"
-        GOVC_CLUSTER: "{{ skyway_edge.vcenter_cluster }}"
-        GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
-        GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
-      register: govc_import_ova3
-      when:
-        - govc is defined and govc_temp.path is defined
-        - govc_import_ova1.failed
-        - govc_import_ova2.failed
-        - govc_import_ova3.failed
+      retries: 10
+      delay: 120
+      until: not govc_import_ova.failed
 
     - name: Now search for created VM
       command: >
