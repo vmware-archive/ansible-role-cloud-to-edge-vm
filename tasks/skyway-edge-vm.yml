@@ -212,15 +212,15 @@
     # use a clone.
     - name: Set delay time
       set_fact:
-        import_delay: "{{ 10|random }}"
+        import_delay: "{{ 1|random }}"
 
     - name: Show delay time
       debug:
-        msg: "Delay for: {{ import_delay|int * 30 }}"
+        msg: "Delay for: {{ import_delay|int * 120 }}"
 
     - name: Delay to ensure prior OVA imports clear out
       pause:
-        seconds: "{{ import_delay|int * 30 }}"
+        seconds: "{{ import_delay|int * 120 }}"
 
     - name: Import ova
       command: >
