@@ -121,6 +121,7 @@
         - not is_arm
       retries: 10
       delay: 120
+      ignore_errors: true
       until: not download_base_ova.failed
 
     - name: Download base OVA from internet
