@@ -6,14 +6,16 @@ bootcmd:
 runcmd:
   - echo 'runcmd done' >> /etc/cmds
 chpasswd: { expire: False }
+{% if skyway_edge_vm_password is defined %}
 chpasswd:
   list: |
     root:{{ skyway_edge_vm_password }}
+    {{ skyway_edge_vm_user }}:{{ skyway_edge_vm_password }}
   expire: False
+{% endif %}
 ssh_pwauth: yes
 users:
   - name: {{ skyway_edge_vm_user }}
-    passwd: $6$rounds=8888$y1zBWcO8MT$J2a599jjEaJDV5Vq3t4yEKz7CVOmJqidRmv4h1fXlkzHArHEcBNUVwbnSGrIaJ2aHUwxRMS193SyuH9fKQJD20
     sudo: ALL=(ALL) NOPASSWD:ALL
     groups: users,wheel
     lock_passwd: false
