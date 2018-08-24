@@ -221,9 +221,11 @@
         GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
       register: govc_import_ova
       when: govc is defined and govc_temp.path is defined
-      retries: 1
-      delay: 10
-      until: not govc_import_ova.failed
+      retries: 5
+      delay: 30
+      until: >
+        not govc_import_ova.failed or
+        govc_import_ova.stderr.find("already exists")
 
     - name: Now search for created VM
       command: >
