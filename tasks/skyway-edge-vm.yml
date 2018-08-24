@@ -221,8 +221,8 @@
         GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
       register: govc_import_ova
       when: govc is defined and govc_temp.path is defined
-      retries: 10
-      delay: 120
+      retries: 1
+      delay: 10
       until: not govc_import_ova.failed
 
     - name: Now search for created VM
@@ -338,22 +338,6 @@
     vm_info.changed
   tags:
     - skip_ansible_lint
-
-- name: Enable esx guest IP hack (ARM)
-  command: >
-    {{ govc }} host.esxcli system settings advanced set -o /Net/GuestIPHack -i 1
-  environment:
-    GOVC_URL: "{{ skyway_edge.vcenter_host }}"
-    GOVC_USERNAME: "{{ skyway_edge.vcenter_usr }}"
-    GOVC_PASSWORD: "{{ skyway_edge.vcenter_pwd }}"
-    GOVC_DATACENTER: "{{ skyway_edge.vcenter_datacenter }}"
-    GOVC_DATASTORE: "{{ skyway_edge.vcenter_datastore }}"
-    GOVC_CLUSTER: "{{ skyway_edge.vcenter_cluster }}"
-    GOVC_RESOURCE_POOL: "{{ skyway_edge.vcenter_rp }}"
-    GOVC_INSECURE: "{{ skyway_edge.vcenter_insecure }}"
-  register: vm_info
-  when:
-    - is_arm == "Never gonna happen."
 
 - name: Wait for VM to get an IP (ARM)
   command: >
