@@ -216,11 +216,11 @@
 
     - name: Show delay time
       debug:
-        msg: "Delay for: {{ import_delay|int * 10 }}"
+        msg: "Delay for: {{ import_delay|int * 30 }}"
 
     - name: Delay to ensure prior OVA imports clear out
       pause:
-        seconds: "{{ import_delay|int * 10 }}"
+        seconds: "{{ import_delay|int * 30 }}"
 
     - name: Import ova
       command: >
