@@ -205,6 +205,23 @@
       when:
         - userdata is defined
 
+    # This is a bit of a workaround.  If all edges are being deployed to a
+    # single vCenter, we can run into timeouts.  Add a delay based on the
+    # index of the edge running.
+    # TODO: add some fancier logic to keep track of unique vCenters or
+    # use a clone.
+    - name: Set delay time
+      set_fact:
+        import_delay: "{{ 1|random }}"
+
+    - name: Show delay time
+      debug:
+        msg: "Delay for: {{ import_delay|int * 120 }}"
+
+    - name: Delay to ensure prior OVA imports clear out
+      pause:
+        seconds: "{{ import_delay|int * 120 }}"
+
     - name: Import ova
       command: >
         {{ govc }} import.ova -options="{{ govc_temp.path }}/vm-spec.json"
