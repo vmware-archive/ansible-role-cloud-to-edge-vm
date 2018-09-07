@@ -18,6 +18,7 @@
   when:
     - azure_iot_edge_names is defined
     - skyway_edge.edge_group in azure_iot_edge_names
+    - azure_iot_enable
 
 - name: Set suffix for GreenGrass Cores
   set_fact:
@@ -25,6 +26,7 @@
   when:
     - greengrass_group_names is defined
     - skyway_edge.edge_group in greengrass_group_names
+    - aws_greengrass_enable
 
 - name: Establish VM name
   set_fact:
