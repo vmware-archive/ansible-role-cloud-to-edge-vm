@@ -10,7 +10,10 @@
 # govc vm.change -vm $vm -m=${memory}
 # govc vm.change -vm $vm -c=${cpus}
 # govc vm.disk.change -vm $vm -size ${disk}
-# vm_path="$(govc find / -type m -name "$vm")"
+
+- name: show edge group for which we will create an edge VM
+  debug:
+    msg: "Creating/refreshing VM for edge group '{{ skyway_edge.edge_group }}'."
 
 - name: Set suffix for Azure edges
   set_fact:
