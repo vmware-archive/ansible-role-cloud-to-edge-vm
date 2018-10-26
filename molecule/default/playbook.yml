@@ -2,4 +2,4 @@
 - name: Converge
   hosts: all
   roles:
-    - role: ansible-role-skyway-edge-vm
+    - role: ansible-role-c2e-edge-vm
