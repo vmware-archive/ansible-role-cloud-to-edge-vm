@@ -1,5 +1,5 @@
 ---
-# tasks file for ansible-role-skyway-edge-vm
+# tasks file for ansible-role-cloud-to-edge-vm
 # Copyright © 2018 VMware, Inc. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 # This role provides the ability to manage Azure Iot resources.

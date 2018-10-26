@@ -1,10 +1,10 @@
 ---
-# tasks file for ansible-role-skyway-edge-vm
+# tasks file for ansible-role-cloud-to-edge-vm
 # Copyright © 2018 VMware, Inc. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 # These tasks loop over the VMs to create.
 
-- include_tasks: skyway-edge-vm.yml
+- include_tasks: c2e-vm.yml
   loop: "{{ skyway_edges[skyway_edge_start-1:skyway_edge_end] }}"
   loop_control:
     loop_var: skyway_edge
@@ -12,7 +12,7 @@
     - skyway_edge_start is defined
     - skyway_edge_end is defined
 
-- include_tasks: skyway-edge-vm.yml
+- include_tasks: c2e-vm.yml
   loop: "{{ skyway_edges }}"
   loop_control:
     loop_var: skyway_edge
