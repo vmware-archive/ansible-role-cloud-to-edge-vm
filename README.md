@@ -13,36 +13,60 @@ intended to run standalone.
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+The following configuration variables affect the operation of this role:
+* ```govc_version``` version of the "govc" binary, a CLI tool to communicate
+with vCenter (default)
+* ```govc_bindir``` path to look for govc (or place it if not found) (default)
+* ```base_ova_name``` name of OVA to use as a base for Edge (default)
+* ```base_ova_name_arm``` ARM architecture equivalent base OVA (default)
+* ```base_ova_server``` web server from which to download base (default)
+* ```base_ova_server_arm``` web server for ARM OVA (default)
+* ```base_ova_origin``` Full base OVA (default)
+* ```base_ova_origin_arm``` Full base ARM OVA (default)
+* ```skyway_edge_vm_basename``` base name for VM, prefixed with group (default)
+* ```skyway_edge_vm_user``` username created on the VM to run Edge (default)
+* ```skyway_edge_vm_password``` password set for the user (default, generated
+  if unset)
+* ```skyway_edge_vm_network``` name of VM network to attach VM (default)
+* ```skyway_edge_vm_ssh_priv_key``` SSH private key to assign to user (default)
+* ```skyway_edge_vm_ssh_pub_key``` SSH pubic key corresponding to private key
+ (default)
+* ```skyway_edges``` list of Edge structured, see default/main.yml for sample
+values
+* ```aws_greengrass_enable``` must be true if the Edge is to be an
+AWS Greengrass Core
+* ```azure_iot_enable``` must be true if the Edge is to be an Azure IoT Edge
+* ```greengrass_group_names``` list of Greengrass group names, must correspond
+to skyway_edge structures
+* ```azure_iot_edge_names``` list of AWS Edge names, must correspond to
+skyway_edge structures
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+This role does not explicitly depend on any other roles, but it should logically
+be run after the cloud-to-edge roles have been run against the cloud to set up
+the Edge at the service provider.
 
 Example Playbook
 ----------------
 
 Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
 
-    - hosts: servers
+    - hosts: c2e-driver
       roles:
-         - { role: username.rolename, x: 42 }
+         - { role: vmware.cloud-to-edge-vm }
 
 License
 -------
 
 MIT
 
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
-
 Contributing
 ---------------
 
-The ansible-role-cloud-to-edge-vm project team welcomes contributions from the community. If you wish to contribute code and you have not
-signed our contributor license agreement (CLA), our bot will update the issue when you open a Pull Request. For any
-questions about the CLA process, please refer to our [FAQ](https://cla.vmware.com/faq). For more detailed information,
+The ansible-role-cloud-to-edge-vm project team welcomes contributions from the
+community. If you wish to contribute code and you have not signed our
+contributor license agreement (CLA), our bot will update the issue when you
+open a Pull Request. For any questions about the CLA process, please refer to our [FAQ](https://cla.vmware.com/faq). For more detailed information,
 refer to [CONTRIBUTING.md](CONTRIBUTING.md).

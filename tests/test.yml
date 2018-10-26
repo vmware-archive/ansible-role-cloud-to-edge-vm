@@ -2,4 +2,4 @@
 - hosts: localhost
   remote_user: root
   roles:
-    - ansible-role-skyway-edge-vm
+    - ansible-role-cloud-to-edge-vm
