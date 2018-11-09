@@ -15,6 +15,10 @@ addons:
   apt:
     update: true
 
+before_install:
+  script:
+    - echo $PATH
+
 jobs:
   include:
     - stage: lint
