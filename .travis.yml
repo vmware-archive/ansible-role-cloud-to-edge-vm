@@ -26,7 +26,9 @@ jobs:
         - ansible-playbook tests/test.yml -i tests/inventory --check
     - stage: test_role
       script:
-        - ansible-playbook tests/test.yml -i tests/inventory
+        - >
+          ansible-playbook tests/test.yml -i tests/inventory
+          --extra-vars "govc_bindir=/home/travis/.local/bin"
     - stage: test_docker
       script:
         - docker build -t vmware/cloud-to-edge-vm .
