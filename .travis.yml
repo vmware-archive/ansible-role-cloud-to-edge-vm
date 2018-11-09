@@ -20,11 +20,9 @@ jobs:
     - stage: lint
       script:
         - molecule lint
-        - ansible-galaxy install -r requirements.yml
         - ansible-playbook tests/test.yml -i tests/inventory --check
     - stage: test_role
       script:
-        - ansible-galaxy install -r requirements.yml
         - ansible-playbook tests/test.yml -i tests/inventory
     - stage: test_docker
       script:
