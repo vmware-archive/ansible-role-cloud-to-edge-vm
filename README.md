@@ -1,8 +1,13 @@
-Role Name
-=========
+cloud-to-edge-vm
+================
 
 This role spins up a VM on a vCenter to serve as an edge VM for the
 [cloud-to-edge](https://github.com/vmware/cloud-to-edge) deploy project.
+
+Build Status
+------------
+
+[![pipeline status](https://travis-ci.org/vmware/ansible-role-cloud-to-edge-vm.svg?branch=master)](https://travis-ci.org/vmware/ansible-role-cloud-to-edge-vm)
 
 Requirements
 ------------

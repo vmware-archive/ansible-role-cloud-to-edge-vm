@@ -19,11 +19,12 @@ jobs:
   include:
     - stage: lint
       script:
-        - pip install -r requirements.txt
         - molecule lint
+        - ansible-galaxy install -r requirements.yml
         - ansible-playbook tests/test.yml -i tests/inventory --check
     - stage: test_role
       script:
+        - ansible-galaxy install -r requirements.yml
         - ansible-playbook tests/test.yml -i tests/inventory
     - stage: test_docker
       script:
