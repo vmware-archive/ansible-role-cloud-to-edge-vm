@@ -16,7 +16,7 @@ addons:
     update: true
 
 before_install:
-  - echo $PATH
+  - mkdir -p /home/travis/bin
 
 jobs:
   include:
@@ -28,7 +28,7 @@ jobs:
       script:
         - >
           ansible-playbook tests/test.yml -i tests/inventory
-          --extra-vars "govc_bindir=/home/travis/.local/bin"
+          --extra-vars "govc_bindir=/home/travis/bin"
     - stage: test_docker
       script:
         - docker build -t vmware/cloud-to-edge-vm .
